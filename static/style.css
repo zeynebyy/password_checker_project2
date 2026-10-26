@@ -1,0 +1,36 @@
+body {
+    background: #f2f2f2;
+    font-family: Arial;
+}
+
+.container {
+    width: 400px;
+    margin: 100px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.msg {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.msg.clean { background: #d4ffd4; }
+.msg.leaked { background: #ffd4d4; }
+.msg.exists { background: #ffe7b3; }
+.msg.empty  { background: #d0d0d0; }

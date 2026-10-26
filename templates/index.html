@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Parola Sızıntı Kontrol Sistemi</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.97);
+            width: 420px;
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+        }
+
+        .toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 12px;
+            background: #667eea;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .strength {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .weak { color: #d63031; }
+        .medium { color: #fdcb6e; }
+        .strong { color: #00b894; }
+
+        .alert {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .danger {
+            background: #ffe0e0;
+            color: #900;
+        }
+
+        .safe {
+            background: #e0ffe8;
+            color: #065f46;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .info {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>🔐 Parola Kontrol</h1>
+    <div class="subtitle">Parolanızın sızıntıya uğrayıp uğramadığını kontrol edin</div>
+
+    <form method="POST" onsubmit="showLoader()">
+        <div class="input-group">
+            <input type="password" id="password" name="password" placeholder="Parolanızı girin" oninput="checkStrength()">
+            <span class="toggle" onclick="togglePassword()">👁</span>
+        </div>
+
+        <div id="strength" class="strength"></div>
+
+        <button type="submit">Kontrol Et</button>
+    </form>
+
+    <!-- LOADING -->
+    <div class="loader" id="loader">⏳ Kontrol ediliyor...</div>
+
+    <!-- SONUÇ (FLASK’TEN GELECEK) -->
+    {% if result == "leaked" %}
+        <div class="alert danger">
+            ⚠️ Bu parola <b>{{ count }}</b> kez sızdırılmış! <br>
+            Risk Seviyesi: <b>Yüksek</b>
+        </div>
+    {% elif result == "clean" %}
+        <div class="alert safe">
+            ✅ Bu parola güvenli görünüyor.
+        </div>
+    {% endif %}
+
+    <div class="info">
+        🔐 Parolanız SHA-1 algoritmasıyla hashlenerek kontrol edilir.<br>
+        📌 Parolanız hiçbir şekilde kaydedilmez.
+    </div>
+</div>
+
+<script>
+    function togglePassword() {
+        const input = document.getElementById("password");
+        input.type = input.type === "password" ? "text" : "password";
+    }
+
+    function checkStrength() {
+        const password = document.getElementById("password").value;
+        const strengthText = document.getElementById("strength");
+
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+
+        if (password.length === 0) {
+            strengthText.innerHTML = "";
+        } else if (score <= 1) {
+            strengthText.innerHTML = "Zayıf Parola";
+            strengthText.className = "strength weak";
+        } else if (score === 2 || score === 3) {
+            strengthText.innerHTML = "Orta Güçte Parola";
+            strengthText.className = "strength medium";
+        } else {
+            strengthText.innerHTML = "Güçlü Parola";
+            strengthText.className = "strength strong";
+        }
+    }
+
+    function showLoader() {
+        document.getElementById("loader").style.display = "block";
+    }
+</script>
+
+</body>
+</html>
